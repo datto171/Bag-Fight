@@ -9,7 +9,8 @@ namespace Test
     public class InventoryController : MonoBehaviour
     {
         public static InventoryController Instance;
-        public Inventory inventory;
+        // public Inventory inventory;
+        // public Inventory inven2;
 
         private Vector3 posItemSelected;
         private TileComponent mainTileHasItem;
@@ -25,23 +26,52 @@ namespace Test
             Item.onPickedUpItem = PickUpItemInBackPack;
         }
 
-        private void CheckHighLightItem(Item item)
+        private void CheckHighLightItem(TileComponent tile, Item item)
         {
+            var invenCheck = tile.invenCreate;
+            tile.invenCreate.OffHighlightInventory();
             
+            // user hover item when not selected any item
+            if (itemSelected == null)
+            {
+                if (tile.itemContain != null)
+                {
+                    var tileHover = tile.mainTileLeft;
+                    item.inventoryContain.HoverHighLightItem(tileHover.x, tileHover.y, item.itemData.width,
+                        item.itemData.height);
+                }
+            }
+            else
+            {
+                int widthItem = itemSelected.itemData.width;
+                int heightItem = itemSelected.itemData.height;
+
+                Vector2 posItem;
+                List<TileComponent> tilesPlace =
+                    invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
+
+                // Cannot place => notice error tiles 
+                if (tilesPlace == null)
+                {
+                    invenCheck.HoverErrorItem(tile.x, tile.y, widthItem, heightItem);
+                }
+                else // show tiles object highlight
+                {
+                    invenCheck.HoverHighLightItem(tile.x, tile.y, widthItem, heightItem);
+                }
+            }
         }
 
-
-        private void Start()
-        {
-            TileComponent tileTest = inventory.GetTile(1, 1);
-            // SetPlaceItem(itemTest, tileTest);
-        }
+        // private void Start()
+        // {
+        //     // TileComponent tileTest = inventory.GetTile(1, 1);
+        //     // SetPlaceItem(itemTest, tileTest);
+        // }
 
         private void Update()
         {
-            
             if (itemSelected == null) return;
-            
+
             posItemSelected = Input.mousePosition;
             posItemSelected.z = 1;
             itemSelected.transform.position = Camera.main.ScreenToWorldPoint(posItemSelected);
@@ -54,6 +84,7 @@ namespace Test
 
         private void ClickTile(TileComponent tile, Item item)
         {
+            // ko cam item
             if (itemSelected == null)
             {
                 if (item == null) return;
@@ -62,13 +93,15 @@ namespace Test
                 itemSelected = item;
                 // PickUpItem(item);
             }
-            else
+            else // place item 
             {
+                Inventory invenCheck = tile.invenCreate;
+
                 int widthItem = itemSelected.itemData.width;
                 int heightItem = itemSelected.itemData.height;
 
                 // Check Overlap item
-                bool isOverlapItem = inventory.CheckOverlapItem(tile.x, tile.y, widthItem, heightItem, itemSelected);
+                bool isOverlapItem = invenCheck.CheckOverlapItem(tile.x, tile.y, widthItem, heightItem, itemSelected);
                 if (isOverlapItem)
                 {
                     return;
@@ -78,17 +111,18 @@ namespace Test
                 // Chỗ này xử lý lại chi tiết hơn ở bên file này
                 // Hàm BoundaryCheck chỉ return là ô đấy có được phép đặt item không
                 List<TileComponent> tilesPlace =
-                    inventory.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
+                    invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
 
                 if (tilesPlace != null)
                 {
                     // Clear old position contain item
                     if (mainTileHasItem != null)
                     {
-                        inventory.ClearOldPosItem(mainTileHasItem.x, mainTileHasItem.y, widthItem, heightItem);
+                        itemSelected.inventoryContain.ClearOldPosItem(mainTileHasItem.x, mainTileHasItem.y, widthItem,
+                            heightItem);
                         mainTileHasItem = null;
                     }
-                    
+
                     // Set all tile contain item at new place 
                     foreach (var tileSet in tilesPlace)
                     {
@@ -97,6 +131,7 @@ namespace Test
                     }
 
                     // Set new pos for item
+                    itemSelected.inventoryContain = invenCheck;
                     itemSelected.transform.position = posItem;
                     itemSelected = null;
                 }

@@ -10,6 +10,7 @@ namespace Test
         public ItemData itemData;
         public bool inBackPack = true;
         public BoxCollider2D collider2D;
+        public Inventory inventoryContain; // save inventory contain this item
         
         public static Action<Item> onPickedUpItem;
 

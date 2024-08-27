@@ -41,6 +41,7 @@ namespace Test
 
                 tileCreate.x = tilePosX;
                 tileCreate.y = tilePosY;
+                tileCreate.invenCreate = this;
 
                 listTiles.Add(tileCreate);
             }
@@ -129,6 +130,52 @@ namespace Test
                     tile.itemContain = null;
                     tile.mainTileLeft = null;
                 }
+            }
+        }
+
+        public void HoverHighLightItem(int x, int y, int widthItem, int heightItem)
+        {
+            var newPosX = x + widthItem - 1;
+            var newPosY = y + heightItem - 1;
+
+            for (int i = x; i <= newPosX; i++)
+            {
+                for (int j = y; j <= newPosY; j++)
+                {
+                    TileComponent tile = GetTile(i, j);
+                    tile.objHighlight.gameObject.SetActive(true);
+                    // tile.itemContain = null;
+                    // tile.mainTileLeft = null;
+                }
+            }
+        }
+
+        public void HoverErrorItem(int x, int y, int widthItem, int heightItem)
+        {
+            var newPosX = x + widthItem - 1;
+            var newPosY = y + heightItem - 1;
+
+            for (int i = x; i <= newPosX; i++)
+            {
+                for (int j = y; j <= newPosY; j++)
+                {
+                    TileComponent tile = GetTile(i, j);
+                    if (tile != null)
+                    {
+                        tile.objErrorNotPlace.gameObject.SetActive(true);
+                    }
+                    // tile.itemContain = null;
+                    // tile.mainTileLeft = null;
+                }
+            }
+        }
+
+        public void OffHighlightInventory()
+        {
+            foreach (var tile in listTiles)
+            {
+                tile.objHighlight.gameObject.SetActive(false);
+                tile.objErrorNotPlace.gameObject.SetActive(false);
             }
         }
 
