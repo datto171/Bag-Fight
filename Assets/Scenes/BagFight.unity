@@ -199,10 +199,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cacca6d4aad0953439108e696b87839f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  width: 0
+  height: 0
+  isRotate: 0
   itemData: {fileID: 11400000, guid: 8312ac20736a5174697d52b8c372d715, type: 2}
   inBackPack: 1
   collider2D: {fileID: 96987796}
-  inventoryContain: {fileID: 0}
+  invenContain: {fileID: 0}
 --- !u!212 &96987798
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -588,7 +591,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78dfeab124d0ff64cb8467c682aefd05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemTest: {fileID: 8639036153603935741}
 --- !u!1 &2050488286
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,10 +741,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cacca6d4aad0953439108e696b87839f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  width: 0
+  height: 0
+  isRotate: 0
   itemData: {fileID: 11400000, guid: f2ed6cf3b36d415458cd2a3a46369022, type: 2}
   inBackPack: 1
   collider2D: {fileID: 8639036153603935742}
-  inventoryContain: {fileID: 0}
+  invenContain: {fileID: 0}
 --- !u!61 &8639036153603935742
 BoxCollider2D:
   m_ObjectHideFlags: 0

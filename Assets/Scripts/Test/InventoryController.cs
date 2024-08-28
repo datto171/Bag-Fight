@@ -9,14 +9,12 @@ namespace Test
     public class InventoryController : MonoBehaviour
     {
         public static InventoryController Instance;
-        // public Inventory inventory;
-        // public Inventory inven2;
 
         private Vector3 posItemSelected;
         private TileComponent mainTileHasItem;
         private Item itemSelected;
 
-        public Item itemTest;
+        // public Item itemTest;
 
         private void Awake()
         {
@@ -29,13 +27,13 @@ namespace Test
 
         private void RemoveHighlight(TileComponent tile)
         {
-            tile.invenCreate.OffHighlightInventory();
+            tile.invenCreate.ClearHighlightInventory();
         }
 
         private void CheckHighLightItem(TileComponent tile, Item item)
         {
             var invenCheck = tile.invenCreate;
-            tile.invenCreate.OffHighlightInventory();
+            tile.invenCreate.ClearHighlightInventory();
 
             // user hover item when not selected any item
             if (itemSelected == null)
@@ -43,36 +41,38 @@ namespace Test
                 if (tile.itemContain != null)
                 {
                     var tileHover = tile.mainTileLeft;
-                    item.inventoryContain.HoverHighLightItem(tileHover.x, tileHover.y, item.itemData.width,
-                        item.itemData.height);
+                    item.invenContain.CheckPosItem(tileHover.x, tileHover.y, item, StateTilesItem.HoverHighlight);
                 }
             }
             else
             {
-                int widthItem = itemSelected.itemData.width;
-                int heightItem = itemSelected.itemData.height;
+                int widthItem = itemSelected.width;
+                int heightItem = itemSelected.height;
 
                 Vector2 posItem;
                 List<TileComponent> tilesPlace =
                     invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
-
                 // Cannot place => notice error tiles 
                 if (tilesPlace == null)
                 {
-                    invenCheck.HoverErrorItem(tile.x, tile.y, widthItem, heightItem);
+                    invenCheck.CheckPosItem(tile.x, tile.y, itemSelected, StateTilesItem.HoverError);
                 }
                 else // show tiles object highlight
                 {
-                    invenCheck.HoverHighLightItem(tile.x, tile.y, widthItem, heightItem);
+                    invenCheck.CheckPosItem(tile.x, tile.y, itemSelected, StateTilesItem.HoverHighlight);
+                }
+                
+                // Check hover tiles can place ? 
+                List<TileComponent> tilesOverlap = invenCheck.CheckOverlapItem(tile.x, tile.y, itemSelected);
+                if (tilesOverlap.Count > 0)
+                {
+                    foreach (var tileCheck in tilesOverlap)
+                    {
+                        tileCheck.ActiveErrorTile();
+                    }
                 }
             }
         }
-
-        // private void Start()
-        // {
-        //     // TileComponent tileTest = inventory.GetTile(1, 1);
-        //     // SetPlaceItem(itemTest, tileTest);
-        // }
 
         private void Update()
         {
@@ -81,6 +81,11 @@ namespace Test
             posItemSelected = Input.mousePosition;
             posItemSelected.z = 1;
             itemSelected.transform.position = Camera.main.ScreenToWorldPoint(posItemSelected);
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                itemSelected.RotateItem();
+            }
         }
 
         private void PickUpItemInBackPack(Item item)
@@ -103,12 +108,12 @@ namespace Test
             {
                 Inventory invenCheck = tile.invenCreate;
 
-                int widthItem = itemSelected.itemData.width;
-                int heightItem = itemSelected.itemData.height;
+                int widthItem = itemSelected.width;
+                int heightItem = itemSelected.height;
 
                 // Check Overlap item
-                bool isOverlapItem = invenCheck.CheckOverlapItem(tile.x, tile.y, widthItem, heightItem, itemSelected);
-                if (isOverlapItem)
+                var tilesOverlap = invenCheck.CheckOverlapItem(tile.x, tile.y, itemSelected);
+                if (tilesOverlap.Count > 0)
                 {
                     return;
                 }
@@ -124,8 +129,8 @@ namespace Test
                     // Clear old position contain item
                     if (mainTileHasItem != null)
                     {
-                        itemSelected.inventoryContain.ClearOldPosItem(mainTileHasItem.x, mainTileHasItem.y, widthItem,
-                            heightItem);
+                        itemSelected.invenContain.CheckPosItem(mainTileHasItem.x, mainTileHasItem.y, itemSelected,
+                            StateTilesItem.RemoveOldPosItem);
                         mainTileHasItem = null;
                     }
 
@@ -137,7 +142,7 @@ namespace Test
                     }
 
                     // Set new pos for item
-                    itemSelected.inventoryContain = invenCheck;
+                    itemSelected.invenContain = invenCheck;
                     itemSelected.transform.position = posItem;
                     itemSelected = null;
                 }

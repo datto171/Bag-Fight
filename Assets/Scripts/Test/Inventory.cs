@@ -6,6 +6,13 @@ using UnityEngine;
 
 namespace Test
 {
+    public enum StateTilesItem
+    {
+        HoverHighlight,
+        HoverError,
+        RemoveOldPosItem
+    }
+
     public class Inventory : MonoBehaviour
     {
         [SerializeField] int width = 5;
@@ -92,9 +99,12 @@ namespace Test
             return tiles;
         }
 
-        public bool CheckOverlapItem(int x, int y, int widthItem, int heightItem, Item itemSelected)
+        public List<TileComponent> CheckOverlapItem(int x, int y, Item item)
         {
-            bool isOverLap = false;
+            List<TileComponent> tilesOverlap = new List<TileComponent>();
+
+            int widthItem = item.width;
+            int heightItem = item.height;
 
             for (int i = 0; i < widthItem; i++)
             {
@@ -103,57 +113,21 @@ namespace Test
                     TileComponent tileCheck = GetTile(x + i, y + j);
                     if (tileCheck != null)
                     {
-                        if (tileCheck.itemContain != null)
+                        if (tileCheck.itemContain != null && tileCheck.itemContain != item)
                         {
-                            if (tileCheck.itemContain != itemSelected)
-                            {
-                                return true;
-                            }
+                            tilesOverlap.Add(tileCheck);
                         }
                     }
                 }
             }
 
-            return false;
+            return tilesOverlap;
         }
 
-        public void ClearOldPosItem(int x, int y, int widthItem, int heightItem)
+        public void CheckPosItem(int x, int y, Item item, StateTilesItem state)
         {
-            var newPosX = x + widthItem - 1;
-            var newPosY = y + heightItem - 1;
-
-            for (int i = x; i <= newPosX; i++)
-            {
-                for (int j = y; j <= newPosY; j++)
-                {
-                    TileComponent tile = GetTile(i, j);
-                    tile.itemContain = null;
-                    tile.mainTileLeft = null;
-                }
-            }
-        }
-
-        public void HoverHighLightItem(int x, int y, int widthItem, int heightItem)
-        {
-            var newPosX = x + widthItem - 1;
-            var newPosY = y + heightItem - 1;
-
-            for (int i = x; i <= newPosX; i++)
-            {
-                for (int j = y; j <= newPosY; j++)
-                {
-                    TileComponent tile = GetTile(i, j);
-                    tile.objHighlight.gameObject.SetActive(true);
-                    // tile.itemContain = null;
-                    // tile.mainTileLeft = null;
-                }
-            }
-        }
-
-        public void HoverErrorItem(int x, int y, int widthItem, int heightItem)
-        {
-            var newPosX = x + widthItem - 1;
-            var newPosY = y + heightItem - 1;
+            var newPosX = x + item.width - 1;
+            var newPosY = y + item.height - 1;
 
             for (int i = x; i <= newPosX; i++)
             {
@@ -162,20 +136,34 @@ namespace Test
                     TileComponent tile = GetTile(i, j);
                     if (tile != null)
                     {
-                        tile.objErrorNotPlace.gameObject.SetActive(true);
+                        HandleState(tile);
                     }
-                    // tile.itemContain = null;
-                    // tile.mainTileLeft = null;
+                }
+            }
+
+            void HandleState(TileComponent tile)
+            {
+                switch (state)
+                {
+                    case StateTilesItem.RemoveOldPosItem:
+                        tile.RemoveItem();
+                        break;
+                    case StateTilesItem.HoverError:
+                        tile.ActiveErrorTile();
+                        break;
+                    case StateTilesItem.HoverHighlight:
+                        tile.ActiveHighlight();
+                        break;
                 }
             }
         }
 
-        public void OffHighlightInventory()
+        public void ClearHighlightInventory()
         {
             foreach (var tile in listTiles)
             {
-                tile.objHighlight.gameObject.SetActive(false);
-                tile.objErrorNotPlace.gameObject.SetActive(false);
+                tile.OffHighlight();
+                tile.OffErrorTile();
             }
         }
 

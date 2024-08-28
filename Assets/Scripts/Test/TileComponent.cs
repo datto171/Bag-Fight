@@ -38,5 +38,31 @@ namespace Test
         {
             onClearHighlight?.Invoke(this);
         }
+
+        public void RemoveItem()
+        {
+            itemContain = null;
+            mainTileLeft = null;
+        }
+
+        public void ActiveHighlight()
+        {
+            objHighlight.SetActive(true);
+        }
+
+        public void ActiveErrorTile()
+        {
+            objErrorNotPlace.SetActive(true);
+        }
+
+        public void OffHighlight()
+        {
+            objHighlight.SetActive(false);
+        }
+
+        public void OffErrorTile()
+        {
+            objErrorNotPlace.SetActive(false);
+        }
     }
 }
