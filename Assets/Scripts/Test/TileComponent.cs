@@ -22,7 +22,7 @@ namespace Test
 
         public static Action<TileComponent, Item> onSelectTile;
         public static Action<TileComponent, Item> onHoverItem;
-        public static Action<TileComponent, Item> onBringItemHover;
+        public static Action<TileComponent> onClearHighlight;
 
         public void OnMouseDown()
         {
@@ -32,6 +32,11 @@ namespace Test
         public void OnMouseEnter()
         {
             onHoverItem?.Invoke(this, itemContain);
+        }
+
+        public void OnMouseExit()
+        {
+            onClearHighlight?.Invoke(this);
         }
     }
 }

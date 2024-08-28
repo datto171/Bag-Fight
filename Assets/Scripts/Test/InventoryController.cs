@@ -23,14 +23,20 @@ namespace Test
             Instance = this;
             TileComponent.onSelectTile = ClickTile;
             TileComponent.onHoverItem = CheckHighLightItem;
+            TileComponent.onClearHighlight = RemoveHighlight;
             Item.onPickedUpItem = PickUpItemInBackPack;
+        }
+
+        private void RemoveHighlight(TileComponent tile)
+        {
+            tile.invenCreate.OffHighlightInventory();
         }
 
         private void CheckHighLightItem(TileComponent tile, Item item)
         {
             var invenCheck = tile.invenCreate;
             tile.invenCreate.OffHighlightInventory();
-            
+
             // user hover item when not selected any item
             if (itemSelected == null)
             {
@@ -139,24 +145,24 @@ namespace Test
         }
 
 
-        public void PlaceItem(TileComponent tile)
-        {
-            mainTileHasItem.itemContain = null;
-            itemSelected.transform.position = tile.transform.position;
-            itemSelected = null;
-        }
-
-        [Button("Place Item")]
-        public void SetPlaceItem(Item item, TileComponent tile)
-        {
-            tile.itemContain = item;
-            item.transform.position = tile.transform.position;
-        }
-
-        public void PickUpItem(Item item)
-        {
-            itemSelected = item;
-            Debug.Log("pick up success");
-        }
+        // public void PlaceItem(TileComponent tile)
+        // {
+        //     mainTileHasItem.itemContain = null;
+        //     itemSelected.transform.position = tile.transform.position;
+        //     itemSelected = null;
+        // }
+        //
+        // [Button("Place Item")]
+        // public void SetPlaceItem(Item item, TileComponent tile)
+        // {
+        //     tile.itemContain = item;
+        //     item.transform.position = tile.transform.position;
+        // }
+        //
+        // public void PickUpItem(Item item)
+        // {
+        //     itemSelected = item;
+        //     Debug.Log("pick up success");
+        // }
     }
 }
