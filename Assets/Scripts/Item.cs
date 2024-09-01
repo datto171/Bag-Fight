@@ -4,13 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Test
+namespace BagFight
 {
+    public enum Rotate
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
     public class Item : MonoBehaviour
     {
         public int width;
         public int height;
         public bool isRotate = false;
+        private Rotate stateRotate;
+
 
         [SerializeField] ItemData itemData;
         public bool inBackPack = true;
@@ -23,6 +33,7 @@ namespace Test
         {
             width = itemData.width;
             height = itemData.height;
+            valueRotation = z1;
         }
 
         public void OnMouseDown()
@@ -32,6 +43,12 @@ namespace Test
             onPickedUpItem?.Invoke(this);
             collider2D.enabled = false;
         }
+
+        private float valueRotation;
+        private float z1 = 0;
+        private float z2 = 90;
+        private float z3 = 180;
+        private float z4 = 270;
 
         public void RotateItem()
         {
@@ -47,7 +64,28 @@ namespace Test
                 height = itemData.height;
             }
 
-            transform.rotation = Quaternion.Euler(0, 0, isRotate == true ? 90f : 0f);
+            if (valueRotation == z1)
+            {
+                valueRotation = z2;
+            }
+            else if (valueRotation == z2)
+            {
+                valueRotation = z3;
+            }
+            else if (valueRotation == z3)
+            {
+                valueRotation = z4;
+            }
+            else if (valueRotation == z4)
+            {
+                valueRotation = z1;
+            }
+
+            // valueRotation = transform.rotation.z;
+            // valueRotation += 90f;
+
+            transform.rotation = Quaternion.Euler(0, 0, valueRotation);
+            // transform.rotation = Quaternion.Euler(0, 0, isRotate == true ? +90f : +90f);
         }
     }
 }

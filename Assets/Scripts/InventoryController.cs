@@ -1,88 +1,173 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using Sirenix.OdinInspector;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace BagFight
 {
     public class InventoryController : MonoBehaviour
     {
-        public ItemGrid selectedItemGrid;
+        public static InventoryController Instance;
 
-        private InventoryItem selectedItem;
-        private InventoryItem overlapItem;
-        private RectTransform rectTransform;
+        private Vector3 posItemSelected;
+        private TileComponent mainTileHasItem;
+        private Item itemSelected;
 
-        [SerializeField] private List<ItemData> items;
-        [SerializeField] private InventoryItem itemPref;
-        [SerializeField] private Transform canvasTransform;
+        // public Item itemTest;
 
-        private void Update()
+        private void Awake()
         {
-            ItemIconDrag();
-
-            if (selectedItemGrid == null) return;
-
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                CreateRandomItem();
-            }
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                LeftMouseBtnPress();
-            }
+            Instance = this;
+            TileComponent.onSelectTile = ClickTile;
+            TileComponent.onHoverItem = CheckHighLightItem;
+            TileComponent.onClearHighlight = RemoveHighlight;
+            Item.onPickedUpItem = PickUpItemInBackPack;
         }
 
-        private void CreateRandomItem()
+        private void RemoveHighlight(TileComponent tile)
         {
-            InventoryItem inventoryItem = Instantiate(itemPref);
-            selectedItem = inventoryItem;
-            
-            rectTransform = inventoryItem.GetComponent<RectTransform>();
-            rectTransform.SetParent(canvasTransform);
-
-            int selectedItemID = Random.Range(0, items.Count);
-            inventoryItem.Set(items[selectedItemID]);
+            tile.invenCreate.ClearHighlightInventory();
         }
 
-        private void ItemIconDrag()
+        private void CheckHighLightItem(TileComponent tile, Item item)
         {
-            if (selectedItem != null)
-            {
-                // selectedItem.transform.position = Input.mousePosition;
-            }
-        }
+            var invenCheck = tile.invenCreate;
+            tile.invenCreate.ClearHighlightInventory();
 
-        void LeftMouseBtnPress()
-        {
-            Vector2Int tileGridPosition = selectedItemGrid.GetTileGridPosition(Input.mousePosition);
-
-            if (selectedItem == null)
+            // user hover item when not selected any item
+            if (itemSelected == null)
             {
-                PickUpItem(tileGridPosition);
+                if (tile.itemContain != null)
+                {
+                    var tileHover = tile.mainTileLeft;
+                    item.invenContain.CheckPosItem(tileHover.x, tileHover.y, item, StateTilesItem.HoverHighlight);
+                }
             }
             else
             {
-                PlaceItem(tileGridPosition);
+                int widthItem = itemSelected.width;
+                int heightItem = itemSelected.height;
+
+                Vector2 posItem;
+                List<TileComponent> tilesPlace =
+                    invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
+                // Cannot place => notice error tiles 
+                if (tilesPlace == null)
+                {
+                    invenCheck.CheckPosItem(tile.x, tile.y, itemSelected, StateTilesItem.HoverError);
+                }
+                else // show tiles object highlight
+                {
+                    invenCheck.CheckPosItem(tile.x, tile.y, itemSelected, StateTilesItem.HoverHighlight);
+                }
+                
+                // Check hover tiles can place ? 
+                List<TileComponent> tilesOverlap = invenCheck.CheckOverlapItem(tile.x, tile.y, itemSelected);
+                if (tilesOverlap.Count > 0)
+                {
+                    foreach (var tileCheck in tilesOverlap)
+                    {
+                        tileCheck.ActiveErrorTile();
+                    }
+                }
             }
         }
 
-        void PickUpItem(Vector2Int tileGridPosition)
+        private void Update()
         {
-            selectedItem = selectedItemGrid.PickUpItem(tileGridPosition.x, tileGridPosition.y);
-            if (selectedItem != null)
+            if (itemSelected == null) return;
+
+            posItemSelected = Input.mousePosition;
+            posItemSelected.z = 1;
+            itemSelected.transform.position = Camera.main.ScreenToWorldPoint(posItemSelected);
+
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                // rectTransform = selectedItem.GetComponent<RectTransform>();
+                itemSelected.RotateItem();
             }
         }
 
-        void PlaceItem(Vector2Int tileGridPosition)
+        private void PickUpItemInBackPack(Item item)
         {
-            selectedItemGrid.PlaceItem(selectedItem, tileGridPosition.x, tileGridPosition.y);
-            selectedItem = null;
+            itemSelected = item;
         }
+
+        private void ClickTile(TileComponent tile, Item item)
+        {
+            // ko cam item
+            if (itemSelected == null)
+            {
+                if (item == null) return;
+
+                mainTileHasItem = tile.mainTileLeft;
+                itemSelected = item;
+                // PickUpItem(item);
+            }
+            else // place item 
+            {
+                Inventory invenCheck = tile.invenCreate;
+
+                int widthItem = itemSelected.width;
+                int heightItem = itemSelected.height;
+
+                // Check Overlap item
+                var tilesOverlap = invenCheck.CheckOverlapItem(tile.x, tile.y, itemSelected);
+                if (tilesOverlap.Count > 0)
+                {
+                    return;
+                }
+
+                Vector2 posItem;
+                // Chỗ này xử lý lại chi tiết hơn ở bên file này
+                // Hàm BoundaryCheck chỉ return là ô đấy có được phép đặt item không
+                List<TileComponent> tilesPlace =
+                    invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
+
+                if (tilesPlace != null)
+                {
+                    // Clear old position contain item
+                    if (mainTileHasItem != null)
+                    {
+                        itemSelected.invenContain.CheckPosItem(mainTileHasItem.x, mainTileHasItem.y, itemSelected,
+                            StateTilesItem.RemoveOldPosItem);
+                        mainTileHasItem = null;
+                    }
+
+                    // Set all tile contain item at new place 
+                    foreach (var tileSet in tilesPlace)
+                    {
+                        tileSet.itemContain = itemSelected;
+                        tileSet.mainTileLeft = tile;
+                    }
+
+                    // Set new pos for item
+                    itemSelected.invenContain = invenCheck;
+                    itemSelected.transform.position = posItem;
+                    itemSelected = null;
+                }
+            }
+        }
+
+
+        // public void PlaceItem(TileComponent tile)
+        // {
+        //     mainTileHasItem.itemContain = null;
+        //     itemSelected.transform.position = tile.transform.position;
+        //     itemSelected = null;
+        // }
+        //
+        // [Button("Place Item")]
+        // public void SetPlaceItem(Item item, TileComponent tile)
+        // {
+        //     tile.itemContain = item;
+        //     item.transform.position = tile.transform.position;
+        // }
+        //
+        // public void PickUpItem(Item item)
+        // {
+        //     itemSelected = item;
+        //     Debug.Log("pick up success");
+        // }
     }
 }
