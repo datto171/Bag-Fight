@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Ftech.Utilities;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,6 +12,8 @@ namespace ObjectPool_1
         public float upForce = 1f;
         public float sideForce = 0.1f;
 
+        private float lifeTime = 2f;
+
         public void OnObjectSpawn()
         {
             float xForce = Random.Range(-sideForce, sideForce);
@@ -20,6 +23,16 @@ namespace ObjectPool_1
             Vector3 force = new Vector3(xForce, yForce, zForce);
 
             GetComponent<Rigidbody>().velocity = force;
+        }
+
+        private void Update()
+        {
+            lifeTime -= Time.deltaTime;
+            if (lifeTime <= 0)
+            {
+                ObjectPool.Recycle(this.gameObject);
+                lifeTime = 2f;
+            }
         }
     }
 }

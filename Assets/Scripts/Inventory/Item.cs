@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -22,7 +23,7 @@ namespace BagFight
         private Rotate stateRotate;
 
 
-        [SerializeField] ItemData itemData;
+        public ItemData itemData;
         public bool inBackPack = true;
         public BoxCollider2D collider2D;
         public Inventory invenContain; // save inventory contain this item
@@ -39,9 +40,14 @@ namespace BagFight
         public void OnMouseDown()
         {
             if (!inBackPack) return;
-
             onPickedUpItem?.Invoke(this);
             collider2D.enabled = false;
+        }
+
+        [Button("check")]
+        public void Test()
+        {
+            itemData.GetSlotCheck();
         }
 
         private float valueRotation;

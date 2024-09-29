@@ -19,7 +19,7 @@ namespace ObjectPool_1
         #endregion
 
         public List<Pool> pools;
-        public Dictionary<string, Queue<GameObject>> poolDictionary;
+        private Dictionary<string, Queue<GameObject>> poolDictionary;
 
         private void Start()
         {
@@ -48,19 +48,42 @@ namespace ObjectPool_1
                 return null;
             }
 
-            GameObject objToSpawn = poolDictionary[tag].Dequeue();
+            GameObject objToSpawn = null;
+            if (poolDictionary[tag].TryDequeue(out var item))
+            {
+                objToSpawn = item;
+                objToSpawn.SetActive(true);
+                objToSpawn.transform.position = pos;
+                objToSpawn.transform.rotation = rotation;
+
+                IPooledObject pooledObject = objToSpawn.GetComponent<IPooledObject>();
+                if (pooledObject != null)
+                {
+                    pooledObject.OnObjectSpawn();
+                }
+            }
+
+            GameObject objectCreate = null;
+            foreach (var pool in pools)
+            {
+                if (pool.tag == tag)
+                {
+                    objectCreate = pool.prefab;
+                }
+            }
+            
+            objToSpawn = Instantiate(objectCreate);
             objToSpawn.SetActive(true);
             objToSpawn.transform.position = pos;
             objToSpawn.transform.rotation = rotation;
-
-            IPooledObject pooledObject = objToSpawn.GetComponent<IPooledObject>();
-            if (pooledObject != null)
-            {
-                pooledObject.OnObjectSpawn();
-            }
-
             poolDictionary[tag].Enqueue(objToSpawn);
+
             return objToSpawn;
+        }
+
+        public void EnqueueObject(string tagPref,GameObject objRecycle)
+        {
+            poolDictionary[tagPref].Enqueue(objRecycle);
         }
     }
 

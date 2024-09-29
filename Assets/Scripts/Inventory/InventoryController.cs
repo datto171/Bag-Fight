@@ -50,8 +50,7 @@ namespace BagFight
                 int heightItem = itemSelected.height;
 
                 Vector2 posItem;
-                List<TileComponent> tilesPlace =
-                    invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
+                List<TileComponent> tilesPlace = invenCheck.BoundaryCheck2(tile.x, tile.y, itemSelected);
                 // Cannot place => notice error tiles 
                 if (tilesPlace == null)
                 {
@@ -61,7 +60,7 @@ namespace BagFight
                 {
                     invenCheck.CheckPosItem(tile.x, tile.y, itemSelected, StateTilesItem.HoverHighlight);
                 }
-                
+
                 // Check hover tiles can place ? 
                 List<TileComponent> tilesOverlap = invenCheck.CheckOverlapItem(tile.x, tile.y, itemSelected);
                 if (tilesOverlap.Count > 0)
@@ -118,11 +117,13 @@ namespace BagFight
                     return;
                 }
 
-                Vector2 posItem;
+                // Vector2 posItem;
                 // Chỗ này xử lý lại chi tiết hơn ở bên file này
                 // Hàm BoundaryCheck chỉ return là ô đấy có được phép đặt item không
-                List<TileComponent> tilesPlace =
-                    invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
+                // List<TileComponent> tilesPlace = invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
+                
+                List<TileComponent> tilesPlace = invenCheck.BoundaryCheck2(tile.x, tile.y, itemSelected);
+                Vector2 posItem = invenCheck.GetPosItem(tile.x, tile.y, itemSelected);
 
                 if (tilesPlace != null)
                 {
