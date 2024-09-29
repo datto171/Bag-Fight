@@ -32,8 +32,8 @@ namespace BagFight
 
         private void Start()
         {
-            width = itemData.width;
-            height = itemData.height;
+            width = itemData.GridSize.x;
+            height = itemData.GridSize.y;
             valueRotation = z1;
         }
 
@@ -61,13 +61,13 @@ namespace BagFight
             isRotate = !isRotate;
             if (isRotate)
             {
-                width = itemData.height;
-                height = itemData.width;
+                width = itemData.GridSize.y;
+                height = itemData.GridSize.x;
             }
             else
             {
-                width = itemData.width;
-                height = itemData.height;
+                width = itemData.GridSize.x;
+                height = itemData.GridSize.y;
             }
 
             if (valueRotation == z1)

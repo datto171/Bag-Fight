@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,80 +9,43 @@ namespace BagFight
     [CustomEditor(typeof(ItemData))]
     public class CreateItemEditor : Editor
     {
-        private Vector2 scrollValue;
+        private SerializedProperty gridSize;
+        private SerializedProperty slots;
+        // private SerializedProperty listTilesCheck;
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+            gridSize = serializedObject.FindProperty("gridSize");
+            slots = serializedObject.FindProperty("bagSlots");
+            // listTilesCheck = serializedObject.FindProperty("listTilesCheck");
 
-            if (GUILayout.Button("Update Size"))
-            {
-                CreateGrid();
-            }
-
-            DrawGridButtons();
+            DrawGridButtons(gridSize.vector2IntValue, slots);
 
             // Hàm nay de cho phep user click thay doi so trong grid vector2
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void CreateGrid()
+        private void DrawGridButtons(Vector2Int vector2Int, SerializedProperty slots)
         {
-            var gridSizeProperty = serializedObject.FindProperty("gridSize");
-            var gridSize = gridSizeProperty.vector2IntValue;
-            var cellData = new int[gridSize.x * gridSize.y];
-            serializedObject.FindProperty("cellData").arraySize = cellData.Length;
-        }
+            slots.arraySize = vector2Int.x * vector2Int.y;
 
-        private void DrawGridButtons()
-        {
-            var gridSizeProperty = serializedObject.FindProperty("gridSize");
-            var gridSize = gridSizeProperty.vector2IntValue;
-            var cellDataProperty = serializedObject.FindProperty("cellData");
-
-            if (cellDataProperty.arraySize != gridSize.x * gridSize.y)
-            {
-                GUILayout.Label("Grid size does not match cell data size");
-                return;
-            }
-
-            GUILayout.Label("0 = None, 1 = Wall");
-
-            var originColor = GUI.backgroundColor;
-            for (int y = 0; y < gridSize.y; y++)
+            for (int y = 0; y < vector2Int.y; y++)
             {
                 EditorGUILayout.BeginHorizontal();
-                for (int x = 0; x < gridSize.x; x++)
+                for (int x = 0; x < vector2Int.x; x++)
                 {
-                    var index = y * gridSize.x + x;
-                    var cellProperty = cellDataProperty.GetArrayElementAtIndex(index);
-                    var buttonLabel = cellProperty.intValue.ToString();
-
-                    var btnColor = Color.white;
-                    if (cellProperty.intValue == 1)
-                    {
-                        btnColor = Color.red;
-                    }
-
-                    // Add Color to button
-                    GUI.backgroundColor = btnColor;
+                    var index = y * vector2Int.x + x;
+                    var slot = slots.GetArrayElementAtIndex(index);
+                    var buttonLabel = slot.boolValue ? "x" : "";
+                    
                     if (GUILayout.Button(buttonLabel, GUILayout.Width(30), GUILayout.Height(30)))
                     {
-                        var value = cellProperty.intValue + 1;
-                        value %= 2;
-                        cellProperty.intValue = value;
+                        slot.boolValue = !slot.boolValue;
                     }
                 }
 
                 EditorGUILayout.EndHorizontal();
-            }
-
-            GUI.backgroundColor = originColor;
-
-            if (GUILayout.Button("Clear Grid"))
-            {
-                cellDataProperty.ClearArray();
-                CreateGrid();
             }
         }
     }

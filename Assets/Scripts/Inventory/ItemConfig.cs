@@ -9,6 +9,6 @@ namespace BagFight
     [CreateAssetMenu(fileName = "ItemConfig", menuName = "ScriptableObjects/ItemConfig")]
     public class ItemConfig : ScriptableObject
     {
-        
+
     }
 }

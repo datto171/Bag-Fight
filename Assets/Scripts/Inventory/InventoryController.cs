@@ -14,23 +14,35 @@ namespace BagFight
         private TileComponent mainTileHasItem;
         private Item itemSelected;
 
-        // public Item itemTest;
-
         private void Awake()
         {
             Instance = this;
             TileComponent.onSelectTile = ClickTile;
-            TileComponent.onHoverItem = CheckHighLightItem;
-            TileComponent.onClearHighlight = RemoveHighlight;
+            TileComponent.onHoverItem = HoverTile;
             Item.onPickedUpItem = PickUpItemInBackPack;
         }
 
-        private void RemoveHighlight(TileComponent tile)
+        private void Update()
         {
-            tile.invenCreate.ClearHighlightInventory();
+            if (itemSelected == null) return;
+
+            posItemSelected = Input.mousePosition;
+            posItemSelected.z = 1;
+            itemSelected.transform.position = Camera.main.ScreenToWorldPoint(posItemSelected);
+
+            if (Input.GetKeyDown(KeyCode.R) || Input.GetMouseButtonUp(1))
+            {
+                Debug.Log("rotate");
+                itemSelected.RotateItem();
+            }
         }
 
-        private void CheckHighLightItem(TileComponent tile, Item item)
+        private void PickUpItemInBackPack(Item item)
+        {
+            itemSelected = item;
+        }
+
+        private void HoverTile(TileComponent tile, Item item)
         {
             var invenCheck = tile.invenCreate;
             tile.invenCreate.ClearHighlightInventory();
@@ -46,11 +58,8 @@ namespace BagFight
             }
             else
             {
-                int widthItem = itemSelected.width;
-                int heightItem = itemSelected.height;
-
-                Vector2 posItem;
                 List<TileComponent> tilesPlace = invenCheck.BoundaryCheck2(tile.x, tile.y, itemSelected);
+
                 // Cannot place => notice error tiles 
                 if (tilesPlace == null)
                 {
@@ -73,24 +82,6 @@ namespace BagFight
             }
         }
 
-        private void Update()
-        {
-            if (itemSelected == null) return;
-
-            posItemSelected = Input.mousePosition;
-            posItemSelected.z = 1;
-            itemSelected.transform.position = Camera.main.ScreenToWorldPoint(posItemSelected);
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                itemSelected.RotateItem();
-            }
-        }
-
-        private void PickUpItemInBackPack(Item item)
-        {
-            itemSelected = item;
-        }
 
         private void ClickTile(TileComponent tile, Item item)
         {
@@ -107,8 +98,8 @@ namespace BagFight
             {
                 Inventory invenCheck = tile.invenCreate;
 
-                int widthItem = itemSelected.width;
-                int heightItem = itemSelected.height;
+                // int widthItem = itemSelected.width;
+                // int heightItem = itemSelected.height;
 
                 // Check Overlap item
                 var tilesOverlap = invenCheck.CheckOverlapItem(tile.x, tile.y, itemSelected);
@@ -121,9 +112,8 @@ namespace BagFight
                 // Chỗ này xử lý lại chi tiết hơn ở bên file này
                 // Hàm BoundaryCheck chỉ return là ô đấy có được phép đặt item không
                 // List<TileComponent> tilesPlace = invenCheck.BoundaryCheck(tile.x, tile.y, widthItem, heightItem, out posItem);
-                
+
                 List<TileComponent> tilesPlace = invenCheck.BoundaryCheck2(tile.x, tile.y, itemSelected);
-                Vector2 posItem = invenCheck.GetPosItem(tile.x, tile.y, itemSelected);
 
                 if (tilesPlace != null)
                 {
@@ -144,6 +134,7 @@ namespace BagFight
 
                     // Set new pos for item
                     itemSelected.invenContain = invenCheck;
+                    Vector2 posItem = invenCheck.GetPosItem(tile.x, tile.y, itemSelected);
                     itemSelected.transform.position = posItem;
                     itemSelected = null;
                 }

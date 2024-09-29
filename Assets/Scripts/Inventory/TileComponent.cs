@@ -36,7 +36,8 @@ namespace BagFight
 
         public void OnMouseExit()
         {
-            onClearHighlight?.Invoke(this);
+            // onClearHighlight?.Invoke(this);
+            invenCreate.ClearHighlightInventory();
         }
 
         public void RemoveItem()

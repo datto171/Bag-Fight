@@ -12,13 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ba664bffc96c04ba2bd9ad4f91a24a, type: 3}
   m_Name: ItemData_3_2
   m_EditorClassIdentifier: 
-  width: 3
-  height: 2
   itemIcon: {fileID: 21300000, guid: 74087f6d03f233e4a8a142fa01f9e5cf, type: 3}
   gridSize: {x: 3, y: 2}
-  cellData: 010000000100000001000000000000000100000000000000
-  listTilesCheck:
-  - {x: 0, y: 0}
-  - {x: 1, y: 0}
-  - {x: 2, y: 0}
-  - {x: 1, y: 1}
+  bagSlots: 010101000100
+  listTilesCheck: []
