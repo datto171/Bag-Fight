@@ -22,7 +22,6 @@ namespace BagFight
         public bool isRotate = false;
         private Rotate stateRotate;
 
-
         public ItemData itemData;
         public bool inBackPack = true;
         public BoxCollider2D collider2D;

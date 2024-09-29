@@ -1,11 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace BagFight
 {
+    public enum StateTile
+    {
+        None,
+        Wall
+    }
+
     public class TileComponent : MonoBehaviour
     {
         public Inventory invenCreate;
@@ -18,11 +25,15 @@ namespace BagFight
         public GameObject objErrorNotPlace;
         public Item itemContain;
 
+        public List<TileComponent> listTilesAround;
+
+        public StateTile stateTile;
+
         public TileComponent mainTileLeft;
 
         public static Action<TileComponent, Item> onSelectTile;
         public static Action<TileComponent, Item> onHoverItem;
-        public static Action<TileComponent> onClearHighlight;
+        // public static Action<TileComponent> onClearHighlight;
 
         public void OnMouseDown()
         {
@@ -38,6 +49,17 @@ namespace BagFight
         {
             // onClearHighlight?.Invoke(this);
             invenCreate.ClearHighlightInventory();
+        }
+
+        public void SetupTilesAround(TileComponent tileAround)
+        {
+            listTilesAround.Add(tileAround);
+        }
+
+        [Button("Set null")]
+        public void SetNull()
+        {
+            itemContain = null;
         }
 
         public void RemoveItem()

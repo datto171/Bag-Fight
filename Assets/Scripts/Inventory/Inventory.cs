@@ -13,6 +13,14 @@ namespace BagFight
         RemoveOldPosItem
     }
 
+    public enum MoveDirection
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
     public class Inventory : MonoBehaviour
     {
         [SerializeField] int width = 5;
@@ -26,11 +34,68 @@ namespace BagFight
         [SerializeField] float distanceY;
 
         private List<TileComponent> listTiles;
+        private List<Vector2Int> listDirections;
 
         private void Awake()
         {
             listTiles = new List<TileComponent>();
+            SetupDirections();
             CreateMap();
+        }
+
+        [Button("Test Move")]
+        Queue<TileComponent> FloodFill(TileComponent tileStart, TileComponent target)
+        {
+            Dictionary<TileComponent, TileComponent> dictTileToTile = new Dictionary<TileComponent, TileComponent>();
+            Queue<TileComponent> queueWillCheck = new Queue<TileComponent>();
+            List<TileComponent> listChecked = new List<TileComponent>();
+
+            queueWillCheck.Enqueue(target);
+
+            while (queueWillCheck.Count > 0)
+            {
+                var curTile = queueWillCheck.Dequeue();
+
+                foreach (var tileNeighbor in curTile.listTilesAround)
+                {
+                    if (listChecked.Contains(tileNeighbor) == false && queueWillCheck.Contains(tileNeighbor) == false)
+                    {
+                        if (tileNeighbor.itemContain == null)
+                        {
+                            queueWillCheck.Enqueue(tileNeighbor);
+                            dictTileToTile[tileNeighbor] = curTile;
+                        }
+                    }
+                }
+
+                listChecked.Add(curTile);
+            }
+
+            if (listChecked.Contains(tileStart) == false)
+            {
+                Debug.Log("No path can move");
+                return null;
+            }
+
+            Queue<TileComponent> path = new Queue<TileComponent>();
+            TileComponent curPathTile = tileStart;
+            while (curPathTile != target)
+            {
+                curPathTile = dictTileToTile[curPathTile];
+                path.Enqueue(curPathTile);
+                Debug.Log("tile move: " + curPathTile);
+            }
+
+            return path;
+        }
+
+        void SetupDirections()
+        {
+            listDirections = new List<Vector2Int>();
+            listDirections.Add(new Vector2Int(0, -1));
+            listDirections.Add(new Vector2Int(0, 1));
+            listDirections.Add(new Vector2Int(1, 0));
+            listDirections.Add(new Vector2Int(-1, 0));
         }
 
         public void CreateMap()
@@ -38,19 +103,29 @@ namespace BagFight
             for (int x = 0; x < width * height; x++)
             {
                 TileComponent tileCreate = Instantiate(tilePrefab, posContain);
-                int tilePosX = x % width;
-                int tilePosY = x / width;
+                tileCreate.x = x % width;
+                tileCreate.y = x / width;
+                tileCreate.name = (tileCreate.x + "_" + tileCreate.y);
 
-                tileCreate.name = (tilePosX + "_" + tilePosY);
-                float posX = tilePosX * distanceX + startPosX;
-                float posY = tilePosY * distanceY * (-1) + startPosY;
+                // set position tile 
+                float posX = tileCreate.x * distanceX + startPosX;
+                float posY = tileCreate.y * distanceY * (-1) + startPosY;
                 tileCreate.transform.localPosition = new Vector3(posX, posY, 0);
 
-                tileCreate.x = tilePosX;
-                tileCreate.y = tilePosY;
                 tileCreate.invenCreate = this;
-
                 listTiles.Add(tileCreate);
+            }
+
+            foreach (var tile in listTiles)
+            {
+                foreach (var dir in listDirections)
+                {
+                    TileComponent tileAround = GetTile(tile.x + dir.x, tile.y + dir.y);
+                    if (tileAround != null)
+                    {
+                        tile.SetupTilesAround(tileAround);
+                    }
+                }
             }
         }
 
@@ -197,7 +272,7 @@ namespace BagFight
 
         public TileComponent GetTile(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= width || y >= height)
+            if (x < 0 || y < 0 || x > (width - 1) || y > (height - 1))
             {
                 return null;
             }
