@@ -45,6 +45,7 @@ namespace BagFight
         private void HoverTile(TileComponent tile, Item item)
         {
             var invenCheck = tile.invenCreate;
+            invenCheck.ClearItemFake();
             tile.invenCreate.ClearHighlightInventory();
 
             // user hover item when not selected any item
@@ -59,7 +60,6 @@ namespace BagFight
             else
             {
                 List<TileComponent> tilesPlace = invenCheck.BoundaryCheck2(tile.x, tile.y, itemSelected);
-
                 // Cannot place => notice error tiles 
                 if (tilesPlace == null)
                 {
@@ -68,6 +68,10 @@ namespace BagFight
                 else // show tiles object highlight
                 {
                     invenCheck.CheckPosItem(tile.x, tile.y, itemSelected, StateTilesItem.HoverHighlight);
+                    foreach (var tileTest in tilesPlace)
+                    {
+                        tileTest.itemContain = invenCheck.itemFake;
+                    }
                 }
 
                 // Check hover tiles can place ? 
@@ -80,8 +84,9 @@ namespace BagFight
                     }
                 }
             }
-        }
 
+            invenCheck.DrawLineMove();
+        }
 
         private void ClickTile(TileComponent tile, Item item)
         {

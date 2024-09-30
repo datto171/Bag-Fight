@@ -7,12 +7,6 @@ using UnityEngine.UI;
 
 namespace BagFight
 {
-    public enum StateTile
-    {
-        None,
-        Wall
-    }
-
     public class TileComponent : MonoBehaviour
     {
         public Inventory invenCreate;
@@ -26,9 +20,6 @@ namespace BagFight
         public Item itemContain;
 
         public List<TileComponent> listTilesAround;
-
-        public StateTile stateTile;
-
         public TileComponent mainTileLeft;
 
         public static Action<TileComponent, Item> onSelectTile;
@@ -57,7 +48,7 @@ namespace BagFight
         }
 
         [Button("Set null")]
-        public void SetNull()
+        public void SetNotNull()
         {
             itemContain = null;
         }

@@ -6,21 +6,6 @@ using UnityEngine;
 
 namespace BagFight
 {
-    public enum StateTilesItem
-    {
-        HoverHighlight,
-        HoverError,
-        RemoveOldPosItem
-    }
-
-    public enum MoveDirection
-    {
-        Up,
-        Down,
-        Left,
-        Right
-    }
-
     public class Inventory : MonoBehaviour
     {
         [SerializeField] int width = 5;
@@ -36,15 +21,50 @@ namespace BagFight
         private List<TileComponent> listTiles;
         private List<Vector2Int> listDirections;
 
+        public LineController prefabLine;
+        public Transform posContainLine;
+        public Item itemFake;
+
         private void Awake()
         {
             listTiles = new List<TileComponent>();
             SetupDirections();
             CreateMap();
+            DrawLineMove();
+        }
+
+        [Button("Draw line move")]
+        public void DrawLineMove()
+        {
+            foreach (Transform child in posContainLine)
+            {
+                Destroy(child.gameObject);
+            }
+
+            var tileStart = listTiles[0];
+            var target = listTiles[^1];
+
+            var lines = FloodFill(tileStart, target);
+            for (int i = 0; i < lines.Count - 1; i++)
+            {
+                var lineController = Instantiate(prefabLine, posContainLine);
+                lineController.DrawLine(lines[i].transform.position, lines[i + 1].transform.position);
+            }
+        }
+
+        public void ClearItemFake()
+        {
+            foreach (var tile in listTiles)
+            {
+                if (tile.itemContain == itemFake)
+                {
+                    tile.itemContain = null;
+                }
+            }
         }
 
         [Button("Test Move")]
-        Queue<TileComponent> FloodFill(TileComponent tileStart, TileComponent target)
+        List<TileComponent> FloodFill(TileComponent tileStart, TileComponent target)
         {
             Dictionary<TileComponent, TileComponent> dictTileToTile = new Dictionary<TileComponent, TileComponent>();
             Queue<TileComponent> queueWillCheck = new Queue<TileComponent>();
@@ -77,12 +97,13 @@ namespace BagFight
                 return null;
             }
 
-            Queue<TileComponent> path = new Queue<TileComponent>();
+            List<TileComponent> path = new List<TileComponent>();
+            path.Add(tileStart);
             TileComponent curPathTile = tileStart;
             while (curPathTile != target)
             {
                 curPathTile = dictTileToTile[curPathTile];
-                path.Enqueue(curPathTile);
+                path.Add(curPathTile);
                 Debug.Log("tile move: " + curPathTile);
             }
 
@@ -211,7 +232,8 @@ namespace BagFight
                 if (tileCheck != null)
                 {
                     Debug.Log("tile Check: " + tileCheck.x + "_" + tileCheck.y);
-                    if (tileCheck.itemContain != null && tileCheck.itemContain != item)
+                    if (tileCheck.itemContain != null && tileCheck.itemContain != item &&
+                        tileCheck.itemContain != itemFake)
                     {
                         tilesOverlap.Add(tileCheck);
                     }

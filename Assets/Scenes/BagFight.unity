@@ -395,6 +395,9 @@ MonoBehaviour:
   startPosY: 0
   distanceX: 0.6
   distanceY: 0.6
+  prefabLine: {fileID: 0}
+  posContainLine: {fileID: 0}
+  itemFake: {fileID: 0}
 --- !u!4 &147615840
 Transform:
   m_ObjectHideFlags: 0
@@ -405,6 +408,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -2.98, z: -8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &596373965
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 596373966}
+  m_Layer: 0
+  m_Name: ContainLineDraw
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &596373966
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596373965}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.51860446, y: 1.2594142, z: 0.4498238}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -728,6 +762,9 @@ MonoBehaviour:
   startPosY: 0
   distanceX: 0.6
   distanceY: 0.6
+  prefabLine: {fileID: -720129277184817119, guid: da0cd5f77e62ae447b8c1d5b5e7991df, type: 3}
+  posContainLine: {fileID: 596373966}
+  itemFake: {fileID: 698492502710737196, guid: 009baa14ab2584047970e6a6e85faad5, type: 3}
 --- !u!1 &6160901569465908142
 GameObject:
   m_ObjectHideFlags: 0
@@ -889,3 +926,4 @@ SceneRoots:
   - {fileID: 7266296035147237766}
   - {fileID: 96987799}
   - {fileID: 734701573}
+  - {fileID: 596373966}

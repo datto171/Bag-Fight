@@ -7,14 +7,6 @@ using UnityEngine.Serialization;
 
 namespace BagFight
 {
-    public enum Rotate
-    {
-        Up,
-        Down,
-        Left,
-        Right
-    }
-
     public class Item : MonoBehaviour
     {
         public int width;
