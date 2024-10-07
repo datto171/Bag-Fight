@@ -7,7 +7,7 @@ namespace TowerDefense
 {
     public struct KillEnemyEvent : IEventData
     {
-        public Enemy enemy;
+        public GameObject enemy;
     }
 }
 

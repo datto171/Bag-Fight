@@ -104,7 +104,7 @@ namespace BagFight
             {
                 curPathTile = dictTileToTile[curPathTile];
                 path.Add(curPathTile);
-                Debug.Log("tile move: " + curPathTile);
+                // Debug.Log("tile move: " + curPathTile);
             }
 
             return path;
@@ -213,7 +213,7 @@ namespace BagFight
                 TileComponent tileCheck = GetTile(x + slot.x, y + slot.y);
                 if (tileCheck != null)
                 {
-                    Debug.Log("tile Check: " + tileCheck.x + "_" + tileCheck.y);
+                    // Debug.Log("tile Check: " + tileCheck.x + "_" + tileCheck.y);
                     tiles.Add(tileCheck);
                 }
             }
@@ -231,7 +231,7 @@ namespace BagFight
                 TileComponent tileCheck = GetTile(x + slot.x, y + slot.y);
                 if (tileCheck != null)
                 {
-                    Debug.Log("tile Check: " + tileCheck.x + "_" + tileCheck.y);
+                    // Debug.Log("tile Check: " + tileCheck.x + "_" + tileCheck.y);
                     if (tileCheck.itemContain != null && tileCheck.itemContain != item &&
                         tileCheck.itemContain != itemFake)
                     {

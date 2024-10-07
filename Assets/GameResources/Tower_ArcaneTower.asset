@@ -9,13 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88ba664bffc96c04ba2bd9ad4f91a24a, type: 3}
-  m_Name: ItemData_1_2
+  m_Script: {fileID: 11500000, guid: 8cc8e605ec3b12d4bb2ff0d9b988b369, type: 3}
+  m_Name: Tower_ArcaneTower
   m_EditorClassIdentifier: 
-  itemIcon: {fileID: 21300000, guid: 74087f6d03f233e4a8a142fa01f9e5cf, type: 3}
-  gridSize: {x: 1, y: 2}
-  bagSlots: 0101
-  listSlotsCheck:
-  - {x: 0, y: 0}
-  - {x: 0, y: 1}
-  isRotatable: 1
+  damage: 5
+  range: 10
+  areaOfEffect: 0.5
+  speed: 2
+  slowEffect: 0
+  critChance: 0.1

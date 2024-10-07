@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace BagFight
 {
+    public enum StateTowersItem{
+        Active,
+        Inactive
+    }
     public enum StateTilesItem
     {
         HoverHighlight,

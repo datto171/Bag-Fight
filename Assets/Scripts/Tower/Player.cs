@@ -27,9 +27,9 @@ namespace TowerDefense
         private void KillEnemy(KillEnemyEvent e)
         {
             var enemyKilled = e.enemy;
-            if (enemies.Contains(enemyKilled))
+            if (enemies.Contains(enemyKilled.GetComponent<Enemy>()))
             {
-                enemies.Remove(enemyKilled);
+                enemies.Remove(enemyKilled.GetComponent<Enemy>());
                 Destroy(enemyKilled.gameObject);
             }
         }
@@ -47,7 +47,7 @@ namespace TowerDefense
                     if (enemies[random] != null)
                     {
                         var posEnemy = enemies[random].transform.position;
-                        bulletX.target = enemies[random].gameObject;
+                        // bulletX.target = enemies[random].gameObject.transform;
                         bulletX.transform.DOMove(posEnemy, 0.2f);
                     }
 

@@ -84,5 +84,6 @@ namespace BagFight
             transform.rotation = Quaternion.Euler(0, 0, valueRotation);
             // transform.rotation = Quaternion.Euler(0, 0, isRotate == true ? +90f : +90f);
         }
+
     }
 }
