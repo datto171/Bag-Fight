@@ -33,7 +33,6 @@ namespace BagFight
             if (towerItemData.invenContain != null)
             {
                 FindClosestTarget();
-                // AimWeapon();
             }
         }
 
@@ -60,17 +59,13 @@ namespace BagFight
             AimWeapon(target);
         }
 
-        void ChangeTarget(Transform target, Transform newTarget){
+        void ChangeTarget(Transform target, Transform newTarget)
+        {
             // Need implementation
         }
 
         void AimWeapon(Transform currentTarget)
         {
-            // var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            // mouseWorldPos.z = 0f;
-
-            // Target = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
-
             if (currentTarget == null)
             {
                 return;
@@ -80,14 +75,10 @@ namespace BagFight
             // Get Angle in Degrees
             float AngleDeg = (180 / Mathf.PI) * AngleRad;
             // Rotate Object
-            spriteRenderer.transform.localRotation = Quaternion.Lerp(spriteRenderer.transform.localRotation,Quaternion.Euler(0, 0, AngleDeg),0.1f);
+            spriteRenderer.transform.localRotation = Quaternion.Lerp(spriteRenderer.transform.localRotation, Quaternion.Euler(0, 0, AngleDeg), 0.1f);
 
-            // target = mouseWorldPos;
 
             float targetDistance = Vector2.Distance(transform.position, currentTarget.position);
-
-            // transform.LookAt(target);
-            // Debug.Log(targetDistance);
 
             if (targetDistance < towerConfig.Range)
             {
@@ -99,31 +90,13 @@ namespace BagFight
             }
         }
 
-        // void Attack(bool isActive)
-        // {
-        //     var emissionModule = projectileParticles.emission;
-        //     emissionModule.enabled = isActive;
-        // }
-
         void Attack(bool isActive, Transform currentTarget)
         {
             if (isActive)
             {
-                // var emissionModule = towerConfig.DamagingSubstance.emission;
-                // emissionModule.enabled = isActive;
                 if (currentCooldown <= 0f)
                 {
-                    // RequestFireBullet(this, )
-                    var bullet = Instantiate(damageSubstance, shootingPoint.transform);
-                    var BulletData = bullet.GetComponent<Bullet>();
-                    BulletData.target = currentTarget;
-                    // BulletData.lastTargetPosition = target.position;
-                    BulletData.damage = towerConfig.Damage;
-                    BulletData.AOE = towerConfig.AOE;
-
-                    // nên có access Enum để có nhiều lựa chọn Effect pass cho Bullet (slow,shock,burn,poison)
-                    BulletData.slowEffect = towerConfig.SlowEffect;
-
+                    Fire(currentTarget);
                     currentCooldown = towerConfig.Speed;
                 }
                 else
@@ -135,6 +108,28 @@ namespace BagFight
             {
                 currentCooldown -= Time.deltaTime;
             }
+        }
+
+        void Fire(Transform currentTarget)
+        {
+            var bullet = Instantiate(damageSubstance, shootingPoint.transform);
+            var BulletData = bullet.GetComponent<Bullet>();
+
+            BulletData.target = currentTarget;
+
+            float critRandomizer = Random.Range(0.0f, 1.0f);
+            if(critRandomizer <= towerConfig.CritChance){
+                BulletData.damage = towerConfig.Damage * 2;
+                BulletData.criticalHit = true;
+            }
+            else{
+                BulletData.damage = towerConfig.Damage;
+                BulletData.criticalHit = false;
+            }
+            BulletData.AOE = towerConfig.AOE;
+
+            // nên có access Enum để có nhiều lựa chọn Effect pass cho Bullet (slow,shock,burn,poison)
+            BulletData.slowEffect = towerConfig.SlowEffect;
         }
 
         private void OnDrawGizmos()

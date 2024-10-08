@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using AdvancedModule.ObserverPattern;
 using BagFight;
 using UnityEngine;
@@ -17,6 +18,10 @@ namespace TowerDefense
         [SerializeField] private Inventory inventory;
         List<TileComponent> currentPath = new List<TileComponent>();
 
+        SpriteRenderer spriteRenderer;
+        float effectTimer = 1f;
+        Dictionary<EnemyEffectState, float> enemyEffect = new Dictionary<EnemyEffectState, float>();
+
         private void OnEnable()
         {
             currentHP = enemyConfig.HP;
@@ -25,8 +30,7 @@ namespace TowerDefense
 
         private void Awake()
         {
-            // Debug.Log(inventory.CurrentPath[1]);
-            // transform.position = inventory.CurrentPath[0].transform.position;
+            spriteRenderer = GetComponent<SpriteRenderer>();
             currentPath = inventory.CurrentPath;
             transform.position = currentPath[1].transform.position;
         }
@@ -40,15 +44,21 @@ namespace TowerDefense
         // Update is called once per frame
         void Update()
         {
-            // if (!isAlive)
-            // {
-            //     StopAllCoroutines();
-            //     transform.position = transform.position;
-            // }
-            // else
-            // {
-            //     transform.position += Vector3.right * currentMS * Time.deltaTime;
-            // }
+            HandleEnemyEffectStatus();
+        }
+
+        void HandleEnemyEffectStatus()
+        {
+            foreach (EnemyEffectState effect in enemyEffect.Keys.ToList())
+            {
+                if(enemyEffect[effect] > 0.0f){
+                    enemyEffect[effect] -= Time.deltaTime;
+                }
+                else{
+                    enemyEffect[effect] = 0.0f;
+                    ResetEnemyEffect(effect);
+                }
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -58,9 +68,13 @@ namespace TowerDefense
                 var bullet = other.gameObject.GetComponent<Bullet>();
                 if (bullet.target == this.transform)
                 {
+                    if (bullet.criticalHit)
+                    {
+                        ApplyEffect(EnemyEffectState.RecieveCriticalHits, bullet.damage);
+                    }
                     Destroy(bullet.gameObject);
 
-                    ApplyEffect(bullet.slowEffect);
+                    ApplyEffect(EnemyEffectState.Slow, bullet.slowEffect);
                     CalculateHP(bullet.damage);
                 }
                 // Destroy(gameObject);
@@ -84,10 +98,30 @@ namespace TowerDefense
             Debug.Log("Triggered");
         }
 
-        private void ApplyEffect(float slowEffect)
+        private void ApplyEffect(EnemyEffectState effect, float effectValue)
         {
-            // enemyConfig.MoveSpeed -= (slowEffect*100)/100;
-            currentMS = enemyConfig.MoveSpeed - (slowEffect * 100) * enemyConfig.MoveSpeed / 100;
+            switch (effect)
+            {
+                case EnemyEffectState.Slow:
+                    enemyEffect[effect] = effectTimer;
+                    currentMS = enemyConfig.MoveSpeed - effectValue * 100 * enemyConfig.MoveSpeed / 100;
+                    break;
+                case EnemyEffectState.RecieveCriticalHits:
+                    enemyEffect[effect] = effectTimer;
+                    spriteRenderer.color = Color.red;
+                    break;
+            }
+        }
+
+        private void ResetEnemyEffect(EnemyEffectState effect){
+            switch (effect){
+                case EnemyEffectState.RecieveCriticalHits:
+                    spriteRenderer.color = new Color(255,255,255,255);
+                    break;
+                case EnemyEffectState.Slow:
+                    currentMS = enemyConfig.MoveSpeed;
+                    break;
+            }
         }
 
         private void CalculateHP(float damage)

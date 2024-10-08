@@ -10,6 +10,7 @@ namespace TowerDefense
     {
         public float speed = 10f;
         public float damage;
+        public bool criticalHit;
         public float slowEffect;
         public float AOE;
         private CircleCollider2D bulletAOE;
@@ -20,10 +21,12 @@ namespace TowerDefense
         [SerializeField] private GameObject bulletAOEEffect;
         // private CircleCollider2D bulletAOEEffectCollider;
 
+        private void Awake() {
+            bulletAOE = GetComponent<CircleCollider2D>();
+        }
+
         private void Start()
         {
-            bulletAOE = GetComponent<CircleCollider2D>();
-            // bulletAOEEffectCollider = bulletAOEEffect.GetComponent<CircleCollider2D>();
 
             // Handle AOE Damage
             if (AOE > 0.5f)

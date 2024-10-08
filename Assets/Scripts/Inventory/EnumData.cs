@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace BagFight
 {
-    public enum StateTowersItem{
-        Active,
-        Inactive
+    public enum EnemyEffectState{
+        Shock,
+        Slow,
+        Poison,
+        Burn,
+        RecieveCriticalHits
     }
     public enum StateTilesItem
     {
