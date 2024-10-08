@@ -14,6 +14,8 @@ namespace TowerDefense
         [SerializeField] private float currentHP;
         public float currentMS;
         private bool isAlive = true;
+        [SerializeField] private Inventory inventory;
+        List<TileComponent> currentPath = new List<TileComponent>();
 
         private void OnEnable()
         {
@@ -21,23 +23,32 @@ namespace TowerDefense
             currentMS = enemyConfig.MoveSpeed;
         }
 
+        private void Awake()
+        {
+            // Debug.Log(inventory.CurrentPath[1]);
+            // transform.position = inventory.CurrentPath[0].transform.position;
+            currentPath = inventory.CurrentPath;
+            transform.position = currentPath[1].transform.position;
+        }
+
         // Start is called before the first frame update
         void Start()
         {
-            // target = GameObject.FindGameObjectWithTag("Player").transform;
+            StartCoroutine(Moving());
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (!isAlive)
-            {
-                transform.position = transform.position;
-            }
-            else
-            {
-                transform.position += Vector3.right * currentMS * Time.deltaTime;
-            }
+            // if (!isAlive)
+            // {
+            //     StopAllCoroutines();
+            //     transform.position = transform.position;
+            // }
+            // else
+            // {
+            //     transform.position += Vector3.right * currentMS * Time.deltaTime;
+            // }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -54,8 +65,9 @@ namespace TowerDefense
                 }
                 // Destroy(gameObject);
             }
-            
-            if (other.gameObject.GetComponent<BulletAOEEffect>()){
+
+            if (other.gameObject.GetComponent<BulletAOEEffect>())
+            {
                 var bulletAOEEffect = other.gameObject.GetComponent<BulletAOEEffect>();
                 CalculateHP(bulletAOEEffect.AOEdamage);
             }
@@ -91,6 +103,22 @@ namespace TowerDefense
                 // StartCoroutine(InitiateCleanupSequence());
                 Destroy(gameObject);
                 Debug.Log("Nooooo! Datto whyyyy?");
+            }
+        }
+
+        private IEnumerator Moving()
+        {
+            for (int i = 1; i < currentPath.Count; i++)
+            {
+                Vector3 startPosition = transform.position;
+                Vector3 endPosition = currentPath[i].transform.position;
+                float travelPercent = 0f;
+                while (travelPercent < 1f)
+                {
+                    travelPercent += Time.deltaTime * currentMS;
+                    transform.position = Vector3.Lerp(startPosition, endPosition, travelPercent);
+                    yield return new WaitForEndOfFrame();
+                }
             }
         }
 

@@ -19,6 +19,8 @@ namespace BagFight
         [SerializeField] float distanceY;
 
         private List<TileComponent> listTiles;
+        private List<TileComponent> currentPath;
+        public List<TileComponent> CurrentPath {get {return currentPath;}}
         private List<Vector2Int> listDirections;
 
         public LineController prefabLine;
@@ -44,11 +46,11 @@ namespace BagFight
             var tileStart = listTiles[0];
             var target = listTiles[^1];
 
-            var lines = FloodFill(tileStart, target);
-            for (int i = 0; i < lines.Count - 1; i++)
+            currentPath = FloodFill(tileStart, target);
+            for (int i = 0; i < currentPath.Count - 1; i++)
             {
                 var lineController = Instantiate(prefabLine, posContainLine);
-                lineController.DrawLine(lines[i].transform.position, lines[i + 1].transform.position);
+                lineController.DrawLine(currentPath[i].transform.position, currentPath[i + 1].transform.position);
             }
         }
 

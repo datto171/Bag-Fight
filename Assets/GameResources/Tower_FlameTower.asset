@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Tower_FlameTower
   m_EditorClassIdentifier: 
   damage: 3
-  range: 2
+  range: 1
   areaOfEffect: 0.5
   speed: 0.15
   slowEffect: 0
   critChance: 0.1
+  damagingSubstance: {fileID: 0}

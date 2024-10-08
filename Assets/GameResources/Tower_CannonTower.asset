@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 5
   range: 4
-  areaOfEffect: 5
-  speed: 1.5
+  areaOfEffect: 2
+  speed: 2.5
   slowEffect: 0
   critChance: 0.1
   damagingSubstance: {fileID: 0}

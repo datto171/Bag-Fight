@@ -8,7 +8,7 @@ namespace TowerDefense
 {
     public class Bullet : MonoBehaviour
     {
-        public float speed = 7.5f;
+        public float speed = 10f;
         public float damage;
         public float slowEffect;
         public float AOE;
@@ -45,11 +45,11 @@ namespace TowerDefense
             if (target != null)
             {
                 lastTargetPosition = target.position;
-                transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, target.position, speed * speed * Time.deltaTime);
             }
             else
             {
-                transform.position = Vector3.MoveTowards(transform.position, lastTargetPosition, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, lastTargetPosition, speed * speed * Time.deltaTime);
             }
 
             if (distanceToTarget <= 0.1f)

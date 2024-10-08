@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6366bd2f7ec1f0c4c9c6798e264e2f2f, type: 3}
   m_Name: Enemy_TestType
   m_EditorClassIdentifier: 
-  moveSpeed: 2
+  moveSpeed: 1
   hitPoints: 5

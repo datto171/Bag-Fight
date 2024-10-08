@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Tower_ArcaneTower
   m_EditorClassIdentifier: 
   damage: 5
-  range: 10
+  range: 8
   areaOfEffect: 0.5
   speed: 2
   slowEffect: 0
   critChance: 0.1
+  damagingSubstance: {fileID: 0}
