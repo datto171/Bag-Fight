@@ -11,7 +11,7 @@ namespace BagFight
         RemoveOldPosItem
     }
 
-    public enum Rotate
+    public enum RotateItem
     {
         Up,
         Down,

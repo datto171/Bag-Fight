@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace BagFight
 {
@@ -11,10 +10,10 @@ namespace BagFight
     {
         public int width;
         public int height;
+        private float valueRotation;
         public bool isRotate = false;
-        private Rotate stateRotate;
 
-        public ItemData itemData;
+        [InlineEditor] public ItemData itemData;
         public bool inBackPack = true;
         public BoxCollider2D collider2D;
         public Inventory invenContain; // save inventory contain this item
@@ -23,9 +22,9 @@ namespace BagFight
 
         private void Start()
         {
+            valueRotation = 0;
             width = itemData.GridSize.x;
             height = itemData.GridSize.y;
-            valueRotation = z1;
         }
 
         public void OnMouseDown()
@@ -41,12 +40,6 @@ namespace BagFight
             itemData.GetSlotCheck();
         }
 
-        private float valueRotation;
-        private float z1 = 0;
-        private float z2 = 90;
-        private float z3 = 180;
-        private float z4 = 270;
-
         public void RotateItem()
         {
             isRotate = !isRotate;
@@ -61,28 +54,9 @@ namespace BagFight
                 height = itemData.GridSize.y;
             }
 
-            if (valueRotation == z1)
-            {
-                valueRotation = z2;
-            }
-            else if (valueRotation == z2)
-            {
-                valueRotation = z3;
-            }
-            else if (valueRotation == z3)
-            {
-                valueRotation = z4;
-            }
-            else if (valueRotation == z4)
-            {
-                valueRotation = z1;
-            }
-
-            // valueRotation = transform.rotation.z;
-            // valueRotation += 90f;
-
+            itemData.ChangeStateRotate();
+            valueRotation -= 90;
             transform.rotation = Quaternion.Euler(0, 0, valueRotation);
-            // transform.rotation = Quaternion.Euler(0, 0, isRotate == true ? +90f : +90f);
         }
     }
 }

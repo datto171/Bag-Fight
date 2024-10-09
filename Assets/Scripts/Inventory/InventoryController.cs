@@ -57,7 +57,7 @@ namespace BagFight
                     item.invenContain.CheckPosItem(tileHover.x, tileHover.y, item, StateTilesItem.HoverHighlight);
                 }
             }
-            else
+            else // item selected != null
             {
                 List<TileComponent> tilesPlace = invenCheck.BoundaryCheck2(tile.x, tile.y, itemSelected);
                 // Cannot place => notice error tiles 
